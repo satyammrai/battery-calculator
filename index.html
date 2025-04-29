@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Battery Powered Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        input, button {
+            margin: 10px;
+            padding: 15px;
+            font-size: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        .battery {
+            width: 50px;
+            height: 100px;
+            background-color: rgb(8, 240, 16);
+            display: inline-block;
+            margin: 10px;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+        }
+        .battery::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            width: 20px;
+            height: 10px;
+            background-color: black;
+            border-radius: 5px;
+        }
+        #chargeBarContainer {
+            width: 300px;
+            height: 30px;
+            background-color: #c8c1c1;
+            margin: 30px auto;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        #chargeBar {
+            height: 100%;
+            width: 0;
+            background-color: rgb(23, 233, 23);
+            transition: width 0.5s;
+        }
+        #switch {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Battery Powered Calculator</h1>
+
+    <div id="step1">
+        <input type="text" id="name" placeholder="Enter your name"><br>
+        <input type="number" id="age" placeholder="Enter your age"><br>
+        <button onclick="giveBatteries()">Submit</button>
+    </div>
+
+    <div id="step2" class="hidden">
+        <p>Insert Batteries (Touch each one!)</p>
+        <div class="battery" id="battery1" onclick="insertBattery('battery1')"></div>
+        <div class="battery" id="battery2" onclick="insertBattery('battery2')"></div>
+        <div class="battery" id="battery3" onclick="insertBattery('battery3')"></div>
+        <div class="battery" id="battery4" onclick="insertBattery('battery4')"></div>
+
+        <div id="chargeBarContainer">
+            <div id="chargeBar"></div>
+        </div>
+    </div>
+
+    <div id="step3" class="hidden">
+        <p>Switch ON the Calculator!</p>
+        <button id="switch" onclick="switchOn()">Switch ON</button>
+    </div>
+
+    <div id="calculator" class="hidden">
+        <input type="number" id="num1" placeholder="First Number">
+        <input type="number" id="num2" placeholder="Second Number"><br>
+        <button onclick="calculate('add')">+</button>
+        <button onclick="calculate('subtract')">-</button>
+        <button onclick="calculate('multiply')">*</button>
+        <button onclick="calculate('divide')">/</button>
+        <h2 id="result"></h2>
+    </div>
+
+    <script>
+        let batteriesInserted = 0;
+
+        function giveBatteries() {
+            const name = document.getElementById('name').value.trim();
+            const age = parseInt(document.getElementById('age').value);
+
+            if (name === "" || isNaN(age)) {
+                alert("Please enter both name and age.");
+                return;
+            }
+
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+        }
+
+        function insertBattery(id) {
+            const battery = document.getElementById(id);
+            if (!battery.classList.contains('hidden')) {
+                battery.classList.add('hidden');
+                batteriesInserted++;
+                updateChargeBar();
+            }
+        }
+
+        function updateChargeBar() {
+            const chargePercent = (batteriesInserted / 4) * 100;
+            document.getElementById('chargeBar').style.width = chargePercent + "%";
+
+            if (batteriesInserted === 4) {
+                setTimeout(() => {
+                    document.getElementById('step2').classList.add('hidden');
+                    document.getElementById('step3').classList.remove('hidden');
+                }, 500);
+            }
+        }
+
+        function switchOn() {
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('calculator').classList.remove('hidden');
+        }
+
+        function calculate(operation) {
+            const num1 = parseFloat(document.getElementById('num1').value);
+            const num2 = parseFloat(document.getElementById('num2').value);
+            let result;
+
+            if (isNaN(num1) || isNaN(num2)) {
+                alert("Please enter two valid numbers.");
+                return;
+            }
+
+            switch (operation) {
+                case 'add':
+                    result = num1 + num2;
+                    break;
+                case 'subtract':
+                    result = num1 - num2;
+                    break;
+                case 'multiply':
+                    result = num1 * num2;
+                    break;
+                case 'divide':
+                    if (num2 === 0) {
+                        result = "Cannot divide by zero";
+                    } else {
+                        result = num1 / num2;
+                    }
+                    break;
+            }
+
+            document.getElementById('result').innerText = "Result: " + result;
+        }
+    </script>
+</body>
+</html>
